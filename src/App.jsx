@@ -65,7 +65,7 @@ function App() {
               <p>Supply decreases, price floor increases</p>
             </div>
             <div>
-              <h3>ETH Distributed</h3>
+              <h3>Distribution</h3>
               <p>Teams get paid, zero sell pressure</p>
             </div>
           </div>
