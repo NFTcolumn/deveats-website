@@ -74,14 +74,12 @@ function App() {
           <h2>Built By</h2>
           <div className="team">
             <div>
-              <strong>nftaanon</strong>
+              <a href="https://twitter.com/nftaanon" target="_blank" rel="noopener noreferrer">nftaanon</a>
               <span>Protocol Designer & Lead Developer</span>
-              <a href="https://twitter.com/nftaanon" target="_blank" rel="noopener noreferrer">@nftaanon</a>
             </div>
             <div>
-              <strong>dudley420</strong>
+              <a href="https://twitter.com/dudley420" target="_blank" rel="noopener noreferrer">dudley420</a>
               <span>Smart Contract Architecture</span>
-              <a href="https://twitter.com/dudley420" target="_blank" rel="noopener noreferrer">@dudley420</a>
             </div>
           </div>
 
