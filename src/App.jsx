@@ -12,7 +12,7 @@ function App() {
               <span className="nav-title">DEVeats</span>
             </div>
             <div className="nav-links">
-              <a href="https://dexscreener.com/base/0xa4C4391bF643EbC391c9848453873656e1Fbd9d5" target="_blank" rel="noopener noreferrer">Trade</a>
+              <a href="https://dexscreener.com/base/0xa4C4391bF643EbC391c9848453873656e1Fbd9d5" target="_blank" rel="noopener noreferrer">$DEVeats</a>
               <a href="https://basescan.org/token/0xa4C4391bF643EbC391c9848453873656e1Fbd9d5" target="_blank" rel="noopener noreferrer">Contract</a>
             </div>
           </div>
@@ -22,7 +22,6 @@ function App() {
       {/* Hero Section */}
       <section className="hero">
         <div className="container">
-          <img src="/logo.png" alt="DEVeats Logo" className="hero-logo" />
           <h1>DEVeats Protocol</h1>
           <p className="tagline">LP Extraction Tax System That Pays Teams Without Dumping On Charts</p>
           <p className="subtitle">Where teams win without holders losing</p>
