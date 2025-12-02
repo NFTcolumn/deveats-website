@@ -74,11 +74,11 @@ function App() {
           <h2>Built By</h2>
           <div className="team">
             <div>
-              <a href="https://twitter.com/nftaanon" target="_blank" rel="noopener noreferrer">nftaanon</a>
+              <a href="https://twitter.com/nftaanon" target="_blank" rel="noopener noreferrer">@nftaanon</a>
               <span>Protocol Designer & Lead Developer</span>
             </div>
             <div>
-              <a href="https://twitter.com/dudley420" target="_blank" rel="noopener noreferrer">dudley420</a>
+              <a href="https://twitter.com/dudley420" target="_blank" rel="noopener noreferrer">@dudley420</a>
               <span>Smart Contract Architecture</span>
             </div>
           </div>
