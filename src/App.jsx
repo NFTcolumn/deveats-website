@@ -37,33 +37,56 @@ function App() {
         </div>
       </section>
 
-      {/* The Problem */}
+      {/* What is DEVeats */}
       <section className="section">
         <div className="container">
-          <h2>The Problem</h2>
-          <p>Traditional token taxes force teams to dump on holders. Tax is collected in tokens, teams sell for funding, chart bleeds, holders panic. This is broken.</p>
+          <h2>What is DEVeats?</h2>
+          <p>DEVeats is an Ethereum-based protocol that replaces traditional "sell-for-pay" team funding with an on-chain mechanism that extracts ETH from liquidity pools without selling tokens and simultaneously burns LP tokens to increase price stability.</p>
+          <p style={{marginTop: '1rem'}}>Instead of devs dumping tokens → tanking the chart → angering holders…<br/>DEVeats lets teams get paid in ETH directly from the LP while reducing supply and strengthening the token price.</p>
         </div>
       </section>
 
-      {/* The Solution */}
+      {/* How It Works */}
       <section className="section">
         <div className="container">
-          <h2>The Solution</h2>
-          <p>DEVeats extracts value directly from liquidity pools. No market sells. Teams get ETH, supply decreases, chart strengthens. Everyone wins.</p>
+          <h2>How It Works</h2>
 
           <div className="how">
             <div>
-              <h3>1. Collect Tax</h3>
-              <p>Tokens accumulate in contract</p>
+              <h3>Buy Occurs</h3>
+              <p>Protocol detects transaction</p>
             </div>
             <div>
-              <h3>2. Extract from LP</h3>
-              <p>Burn LP, receive ETH + tokens</p>
+              <h3>Tax Routed</h3>
+              <p>% tax taken in ETH/WETH from LP</p>
             </div>
             <div>
-              <h3>3. Distribute</h3>
-              <p>ETH to teams, burn all tokens</p>
+              <h3>LP Burned</h3>
+              <p>Supply decreases, price floor increases</p>
             </div>
+            <div>
+              <h3>ETH Distributed</h3>
+              <p>Teams get paid, zero sell pressure</p>
+            </div>
+          </div>
+
+          <div style={{marginTop: '2rem'}}>
+            <p>This lowers circulating supply, increases price floor, maintains market integrity, and prevents dev dumping. Fully transparent. No token sell pressure.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Protocol */}
+      <section className="section">
+        <div className="container">
+          <h2>Why This Is a Protocol</h2>
+          <p>DEVeats is the first protocol that eliminates dev dumping by funding teams directly from LP mechanics while strengthening the token. This is a feature, not a rug.</p>
+          <div style={{marginTop: '1.5rem', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
+            <p style={{fontSize: '1rem', marginBottom: '0.5rem'}}>✓ Reduces LP token supply</p>
+            <p style={{fontSize: '1rem', marginBottom: '0.5rem'}}>✓ Increases pool's ETH ratio</p>
+            <p style={{fontSize: '1rem', marginBottom: '0.5rem'}}>✓ Increases price per token</p>
+            <p style={{fontSize: '1rem', marginBottom: '0.5rem'}}>✓ Pays teams transparently in ETH</p>
+            <p style={{fontSize: '1rem'}}>✓ Standardizes safer tokenomics</p>
           </div>
         </div>
       </section>
