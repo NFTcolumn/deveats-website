@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import './ContractGenerator.css';
 
+const DEVEATS_TOKEN = '0xa4C4391bF643EbC391c9848453873656e1Fbd9d5'; // Base mainnet
+const DEVEATS_ABI = [
+  "function balanceOf(address account) external view returns (uint256)"
+];
+
 const FACTORY_ABI = [
   "function deployToken(string memory _name, string memory _symbol, uint256 _initialSupply, address _routerAddress, address _devWallet, address _marketingWallet, address _buybackWallet, address _charityWallet) external payable returns (address)",
   "function DEPLOYMENT_FEE() external view returns (uint256)",
@@ -11,29 +16,14 @@ const FACTORY_ABI = [
 ];
 
 const NETWORKS = {
-  'localhost': {
-    name: 'Localhost (Hardhat)',
-    chainId: 31337,
-    rpcUrl: 'http://127.0.0.1:8545',
-    routerAddress: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    factoryAddress: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    explorer: ''
-  },
   'base': {
     name: 'Base Mainnet',
     chainId: 8453,
     rpcUrl: 'https://mainnet.base.org',
     routerAddress: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
     factoryAddress: '', // Will be deployed
-    explorer: 'https://basescan.org'
-  },
-  'base-sepolia': {
-    name: 'Base Sepolia',
-    chainId: 84532,
-    rpcUrl: 'https://sepolia.base.org',
-    routerAddress: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
-    factoryAddress: '', // Will be deployed
-    explorer: 'https://sepolia.basescan.org'
+    explorer: 'https://basescan.org',
+    requiresToken: true
   }
 };
 
@@ -50,9 +40,11 @@ function ContractGenerator() {
     charityWallet: ''
   });
 
-  const [network, setNetwork] = useState('localhost');
+  const [network, setNetwork] = useState('base');
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploymentStatus, setDeploymentStatus] = useState('');
   const [deployedAddress, setDeployedAddress] = useState('');
@@ -79,11 +71,28 @@ function ContractGenerator() {
     }
   };
 
+  const checkTokenBalance = async (address) => {
+    try {
+      const provider = new ethers.JsonRpcProvider(NETWORKS['base'].rpcUrl);
+      const tokenContract = new ethers.Contract(DEVEATS_TOKEN, DEVEATS_ABI, provider);
+      const balance = await tokenContract.balanceOf(address);
+
+      // Require at least 1,000 tokens (assuming 18 decimals)
+      const requiredBalance = ethers.parseUnits('1000', 18);
+      return balance >= requiredBalance;
+    } catch (error) {
+      console.error('Error checking token balance:', error);
+      return false;
+    }
+  };
+
   const connectWallet = async () => {
     if (typeof window.ethereum === 'undefined') {
       alert('Please install MetaMask to use this feature');
       return;
     }
+
+    setIsCheckingAccess(true);
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -91,14 +100,41 @@ function ContractGenerator() {
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
 
+      // Prompt user to sign a message to verify wallet ownership
+      const message = `Welcome to DEVeats Contract Generator!\n\nPlease sign this message to verify wallet ownership.\n\nWallet: ${address}\nTimestamp: ${new Date().toISOString()}`;
+
+      try {
+        const signature = await signer.signMessage(message);
+        console.log('Signature verified:', signature);
+      } catch (signError) {
+        console.error('Signature rejected:', signError);
+        alert('You must sign the message to connect your wallet.');
+        setIsCheckingAccess(false);
+        return;
+      }
+
       setAccount(address);
       setIsConnected(true);
 
-      // Check/switch network
+      // Check if network requires token
+      if (NETWORKS[network].requiresToken) {
+        const hasToken = await checkTokenBalance(address);
+        if (!hasToken) {
+          setHasAccess(false);
+          setIsConnected(false);
+          setAccount(null);
+          alert('Access Denied: You must hold at least 1,000 DEVeats tokens to use this generator.\n\nBuy $DEVeats on Uniswap: https://app.uniswap.org/swap?outputCurrency=' + DEVEATS_TOKEN + '&chain=base');
+          return;
+        }
+      }
+
+      setHasAccess(true);
       await switchNetwork();
     } catch (error) {
       console.error('Error connecting wallet:', error);
       alert('Failed to connect wallet: ' + error.message);
+    } finally {
+      setIsCheckingAccess(false);
     }
   };
 
@@ -310,8 +346,8 @@ contract ${formData.symbol}Token is DEVeatsTax {
 
       <div className="wallet-section">
         {!isConnected ? (
-          <button onClick={connectWallet} className="connect-btn">
-            Connect Wallet
+          <button onClick={connectWallet} className="connect-btn" disabled={isCheckingAccess}>
+            {isCheckingAccess ? 'Checking Access...' : 'Connect Wallet'}
           </button>
         ) : (
           <div className="connected-info">
@@ -322,15 +358,6 @@ contract ${formData.symbol}Token is DEVeatsTax {
       </div>
 
       <div className="form-section">
-        <div className="form-group">
-          <label>Network</label>
-          <select value={network} onChange={(e) => setNetwork(e.target.value)}>
-            <option value="localhost">Localhost (Hardhat)</option>
-            <option value="base">Base Mainnet</option>
-            <option value="base-sepolia">Base Sepolia (Testnet)</option>
-          </select>
-        </div>
-
         <div className="form-row">
           <div className="form-group">
             <label>Token Name *</label>

@@ -13,15 +13,6 @@ const FACTORY_ABI = [
 ];
 
 const NETWORKS = {
-  'localhost': {
-    name: 'Localhost (Hardhat)',
-    chainId: 31337,
-    rpcUrl: 'http://127.0.0.1:8545',
-    routerAddress: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    factoryAddress: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-    explorer: '',
-    requiresToken: false // Skip token check for localhost
-  },
   'base': {
     name: 'Base Mainnet',
     chainId: 8453,
@@ -30,15 +21,6 @@ const NETWORKS = {
     factoryAddress: '',
     explorer: 'https://basescan.org',
     requiresToken: true
-  },
-  'base-sepolia': {
-    name: 'Base Sepolia',
-    chainId: 84532,
-    rpcUrl: 'https://sepolia.base.org',
-    routerAddress: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
-    factoryAddress: '',
-    explorer: 'https://sepolia.basescan.org',
-    requiresToken: false // Skip token check for testnet
   }
 };
 
@@ -68,7 +50,7 @@ function ContractGeneratorV2() {
     { name: 'Dev', address: '', share: '25' }
   ]);
 
-  const [network, setNetwork] = useState('localhost');
+  const [network, setNetwork] = useState('base');
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
@@ -86,7 +68,10 @@ function ContractGeneratorV2() {
       const provider = new ethers.JsonRpcProvider(NETWORKS['base'].rpcUrl);
       const tokenContract = new ethers.Contract(DEVEATS_TOKEN, DEVEATS_ABI, provider);
       const balance = await tokenContract.balanceOf(address);
-      return balance > 0n;
+
+      // Require at least 1,000 tokens (assuming 18 decimals)
+      const requiredBalance = ethers.parseUnits('1000', 18);
+      return balance >= requiredBalance;
     } catch (error) {
       console.error('Error checking token balance:', error);
       return false;
@@ -107,6 +92,19 @@ function ContractGeneratorV2() {
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
 
+      // Prompt user to sign a message to verify wallet ownership
+      const message = `Welcome to DEVeats Contract Generator!\n\nPlease sign this message to verify wallet ownership.\n\nWallet: ${address}\nTimestamp: ${new Date().toISOString()}`;
+
+      try {
+        const signature = await signer.signMessage(message);
+        console.log('Signature verified:', signature);
+      } catch (signError) {
+        console.error('Signature rejected:', signError);
+        alert('You must sign the message to connect your wallet.');
+        setIsCheckingAccess(false);
+        return;
+      }
+
       setAccount(address);
       setIsConnected(true);
 
@@ -117,7 +115,7 @@ function ContractGeneratorV2() {
           setHasAccess(false);
           setIsConnected(false);
           setAccount(null);
-          alert('Access Denied: You must hold DEVeats tokens to use this generator.\n\nBuy $DEVeats on Uniswap: https://app.uniswap.org/swap?outputCurrency=' + DEVEATS_TOKEN + '&chain=base');
+          alert('Access Denied: You must hold at least 1,000 DEVeats tokens to use this generator.\n\nBuy $DEVeats on Uniswap: https://app.uniswap.org/swap?outputCurrency=' + DEVEATS_TOKEN + '&chain=base');
           return;
         }
       }
@@ -322,10 +320,11 @@ ${wallets.map((w, i) => `        addTaxWallet(${w.address}, "${w.name}", ${w.sha
           <div className="gate-box">
             <div className="gate-icon">🔒</div>
             <h2>Token Required</h2>
-            <p>To access the contract generator, you must hold DEVeats tokens.</p>
+            <p>To access the contract generator, you must hold at least 1,000 DEVeats tokens.</p>
 
             <div className="gate-info">
               <p><strong>Token:</strong> DEVeats ($DEVEATS)</p>
+              <p><strong>Required:</strong> Minimum 1,000 tokens</p>
               <p><strong>Network:</strong> Base Mainnet</p>
               <p><strong>Contract:</strong> <code>{DEVEATS_TOKEN}</code></p>
             </div>
@@ -391,14 +390,6 @@ ${wallets.map((w, i) => `        addTaxWallet(${w.address}, "${w.name}", ${w.sha
           <div className="step-content">
             <h2>Step 1: Token Details</h2>
 
-            <div className="form-group">
-              <label>Network</label>
-              <select value={network} onChange={(e) => setNetwork(e.target.value)}>
-                <option value="localhost">Localhost (Hardhat)</option>
-                <option value="base">Base Mainnet</option>
-                <option value="base-sepolia">Base Sepolia (Testnet)</option>
-              </select>
-            </div>
 
             <div className="form-row">
               <div className="form-group">
