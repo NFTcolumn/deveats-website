@@ -7,7 +7,7 @@ services:
     pullRequestPreviewsEnabled: true
     routes:
       - type: rewrite
-        source: /:path*
+        source: /*
         destination: /index.html
     headers:
       - path: /*
